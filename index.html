@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Niespodzianka dla Zosi 🎂</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Warstwa konfetti / tła -->
+  <div id="stars" class="stars"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Przycisk muzyki -->
+  <button id="music-toggle" class="music-toggle" aria-label="Włącz/wyłącz muzykę" title="Muzyka">
+    <span id="music-icon">🔇</span>
+  </button>
+
+  <!-- EKRAN 1: Powitanie -->
+  <section class="scene active" id="scene-1">
+    <div class="content fade-in">
+      <div class="emoji-big floating">✨</div>
+      <h1 class="title">Cześć <span class="name">Zosiu</span>...</h1>
+      <p class="subtitle">Mam dla Ciebie coś specjalnego</p>
+      <button class="btn" data-next="2">Zaczynamy ✨</button>
+    </div>
+  </section>
+
+  <!-- EKRAN 2: Życzenia -->
+  <section class="scene" id="scene-2">
+    <div class="balloons">
+      <span class="balloon b1">🎈</span>
+      <span class="balloon b2">🎈</span>
+      <span class="balloon b3">🎈</span>
+      <span class="balloon b4">🎈</span>
+      <span class="balloon b5">🎈</span>
+    </div>
+    <div class="content fade-in">
+      <h1 class="title">Wszystkiego najlepszego!</h1>
+      <p class="subtitle">
+        Życzę Ci samych pięknych chwil,<br />
+        spełnienia marzeń i mnóstwo powodów do uśmiechu 💕
+      </p>
+      <button class="btn" data-next="3">Dziękuję! 💖</button>
+    </div>
+  </section>
+
+  <!-- EKRAN 3: Zdmuchnij świeczki -->
+  <section class="scene" id="scene-3">
+    <div class="content fade-in">
+      <h1 class="title">Zdmuchnij świeczki 🎂</h1>
+      <p class="subtitle">Kliknij w tort 3 razy i pomyśl życzenie</p>
+      <div class="cake" id="cake">
+        <div class="candles">
+          <span class="candle">🕯️</span>
+          <span class="candle">🕯️</span>
+          <span class="candle">🕯️</span>
+        </div>
+        <div class="cake-emoji">🎂</div>
+      </div>
+      <p class="hint" id="cake-hint">Pozostało dmuchnięć: <strong>3</strong></p>
+    </div>
+  </section>
+
+  <!-- EKRAN 4: Prezent -->
+  <section class="scene" id="scene-4">
+    <div class="content fade-in">
+      <h1 class="title">Życzenie wysłane... 🌟</h1>
+      <p class="subtitle">A teraz... kliknij prezent!</p>
+      <button class="gift-btn" id="gift-btn" aria-label="Otwórz prezent">
+        <span class="gift-emoji">🎁</span>
+      </button>
+      <p class="hint">↑ kliknij ↑</p>
+    </div>
+  </section>
+
+  <!-- EKRAN 5: Wielkie otwarcie -->
+  <section class="scene" id="scene-5">
+    <div class="content fade-in">
+      <h1 class="title gradient-text">Niespodzianka! 🎉</h1>
+      <p class="subtitle">Karta podarunkowa Zalando dla Ciebie</p>
+
+      <div class="gift-card">
+        <div class="gift-card-header">
+          <span class="brand">ZALANDO</span>
+          <span class="card-amount" id="card-amount">200 zł</span>
+        </div>
+        <div class="gift-card-body">
+          <p class="card-label">Twój kod:</p>
+          <div class="code-wrapper">
+            <code id="gift-code">KOD-PODARUNKOWY</code>
+            <button class="copy-btn" id="copy-btn" aria-label="Skopiuj kod">📋</button>
+          </div>
+          <p class="copy-status" id="copy-status"></p>
+        </div>
+        <div class="gift-card-footer">
+          <span>Ważne do: <strong id="valid-until">—</strong></span>
+        </div>
+      </div>
+
+      <a class="btn btn-primary" id="redeem-link" href="#" target="_blank" rel="noopener">
+        Idź do Zalando 🛍️
+      </a>
+
+      <p class="from">Z miłością, <span id="from-name">—</span> 💕</p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
