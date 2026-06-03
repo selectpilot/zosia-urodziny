@@ -177,13 +177,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (musicPlaying) stopMusic(); else startMusic();
   });
 
-  // Spróbuj automatycznie włączyć muzykę przy pierwszej interakcji
-  // (przeglądarki blokują autoplay bez user gesture – więc czekamy na pierwszy klik)
-  document.addEventListener('click', (e) => {
-    // Pomijamy jeśli kliknięto sam przycisk muzyki (ma własną logikę)
-    if (e.target.closest('#music-toggle')) return;
-    if (!musicPlaying) startMusic();
-  }, { once: true });
+  // Próbujemy autoplay od razu po załadowaniu strony.
+  // Większość przeglądarek to zablokuje (polityka autoplay), ale spróbujmy –
+  // a jeśli się nie uda, muzyka ruszy przy pierwszej interakcji (klik / dotyk / klawisz).
+  function tryAutoplay() {
+    startMusic();
+    // Sprawdź po krótkiej chwili czy context faktycznie gra
+    setTimeout(() => {
+      if (audioCtx && audioCtx.state !== 'running') {
+        // Autoplay zablokowany – pulsuj przycisk muzyki żeby zwrócić uwagę
+        musicBtn.classList.add('attention');
+      }
+    }, 300);
+  }
+
+  // Spróbuj od razu
+  tryAutoplay();
+
+  // Plus fallback: każda interakcja użytkownika włącza muzykę jeśli jeszcze nie gra
+  const enableOnInteraction = (e) => {
+    if (e.target && e.target.closest && e.target.closest('#music-toggle')) return;
+    if (!audioCtx || audioCtx.state !== 'running') {
+      startMusic();
+      musicBtn.classList.remove('attention');
+    }
+  };
+
+  document.addEventListener('click',     enableOnInteraction, { once: true });
+  document.addEventListener('touchstart', enableOnInteraction, { once: true });
+  document.addEventListener('keydown',    enableOnInteraction, { once: true });
 
   // ===== Helpery konfetti =====
   function burstConfetti(type) {
