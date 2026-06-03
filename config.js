@@ -4,7 +4,7 @@
 
 const CONFIG = {
   imie: "Zosia",
-  kodPodarunkowy: "TUTAJ-WPISZ-KOD-ZALANDO",
+  kodPodarunkowy: "P14H9PVMUSWSMAEE",
   kwota: "500 zł",            // np. "500 zł" – pokazane na karcie
   waznoscDo: "31.12.2026",    // data ważności kodu
   linkDoRealizacji: "https://www.zalando.pl/zalando-gift-card-voucher/",
