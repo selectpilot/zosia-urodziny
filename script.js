@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Konfetti canvas
   const canvas = document.getElementById('confetti-canvas');
-  const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
+  const myConfetti = confetti.create(canvas, { resize: true, useWorker: false });
 
   // ===== Przełączanie scen =====
   function goToScene(num) {
@@ -51,7 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== Scena 4: prezent =====
   const giftBtn = document.getElementById('gift-btn');
+  let giftOpened = false;
   giftBtn.addEventListener('click', () => {
+    if (giftOpened) return;
+    giftOpened = true;
     burstConfetti('big');
     setTimeout(() => {
       goToScene(5);
@@ -158,11 +161,26 @@ document.addEventListener('DOMContentLoaded', () => {
       musicGain.gain.value = 0.25; // głośność ogólna
       musicGain.connect(audioCtx.destination);
     }
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    musicPlaying = true;
-    musicBtn.classList.add('playing');
-    musicIcon.textContent = '🔊';
-    playMelodyLoop();
+
+    // Wyczyść poprzednią pętlę żeby nie grały dwie naraz
+    if (musicTimer) { clearTimeout(musicTimer); musicTimer = null; }
+
+    const begin = () => {
+      musicPlaying = true;
+      musicBtn.classList.add('playing');
+      musicBtn.classList.remove('attention');
+      musicIcon.textContent = '🔊';
+      playMelodyLoop();
+    };
+
+    if (audioCtx.state === 'suspended') {
+      // resume() zwraca Promise – startujemy nuty DOPIERO gdy context faktycznie działa
+      audioCtx.resume().then(begin).catch(() => {
+        // Autoplay zablokowany – nie startujemy pętli, czekamy na realną interakcję
+      });
+    } else {
+      begin();
+    }
   }
 
   function stopMusic() {
@@ -170,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     musicBtn.classList.remove('playing');
     musicIcon.textContent = '🔇';
     if (musicTimer) { clearTimeout(musicTimer); musicTimer = null; }
-    if (audioCtx) audioCtx.suspend();
+    if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
   }
 
   musicBtn.addEventListener('click', () => {
@@ -180,30 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Próbujemy autoplay od razu po załadowaniu strony.
   // Większość przeglądarek to zablokuje (polityka autoplay), ale spróbujmy –
   // a jeśli się nie uda, muzyka ruszy przy pierwszej interakcji (klik / dotyk / klawisz).
-  function tryAutoplay() {
-    startMusic();
-    // Sprawdź po krótkiej chwili czy context faktycznie gra
-    setTimeout(() => {
-      if (audioCtx && audioCtx.state !== 'running') {
-        // Autoplay zablokowany – pulsuj przycisk muzyki żeby zwrócić uwagę
-        musicBtn.classList.add('attention');
-      }
-    }, 300);
-  }
+  startMusic();
+  setTimeout(() => {
+    if (!musicPlaying) musicBtn.classList.add('attention');
+  }, 400);
 
-  // Spróbuj od razu
-  tryAutoplay();
-
-  // Plus fallback: każda interakcja użytkownika włącza muzykę jeśli jeszcze nie gra
+  // Fallback: pierwsza interakcja użytkownika włącza muzykę jeśli jeszcze nie gra
   const enableOnInteraction = (e) => {
     if (e.target && e.target.closest && e.target.closest('#music-toggle')) return;
-    if (!audioCtx || audioCtx.state !== 'running') {
-      startMusic();
-      musicBtn.classList.remove('attention');
-    }
+    if (!musicPlaying) startMusic();
   };
 
-  document.addEventListener('click',     enableOnInteraction, { once: true });
+  document.addEventListener('click',      enableOnInteraction, { once: true });
   document.addEventListener('touchstart', enableOnInteraction, { once: true });
   document.addEventListener('keydown',    enableOnInteraction, { once: true });
 
